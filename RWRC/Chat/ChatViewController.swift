@@ -35,6 +35,7 @@ import Firebase
 import MessageKit
 import InputBarAccessoryView
 import FirebaseFirestore
+import Photos
 
 final class ChatViewController: MessagesViewController {
   private let user: User
@@ -88,6 +89,18 @@ final class ChatViewController: MessagesViewController {
         self.handleDocumentChange(change)
       }
     })
+  }
+  
+  @objc private func cameraButtonPressed() {
+    let picker = UIImagePickerController()
+    picker.delegate = self
+    
+    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+      picker.sourceType = .camera
+    } else {
+      picker.sourceType = .photoLibrary
+    }
+    present(picker, animated: true)
   }
   
   // MARK: - Helpers
@@ -162,6 +175,19 @@ final class ChatViewController: MessagesViewController {
       textAlignment: .right,
       textInsets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 15))
     layout.setMessageOutgoingMessageTopLabelAlignment(outgoingLabelAlignment)
+  }
+  
+  private func addCameraBarButton() {
+    let cameraItem = InputBarButtonItem(type: .system)
+    cameraItem.tintColor = .primary
+    cameraItem.image = UIImage(named: "camera")
+    
+    cameraItem.addTarget(self, action: #selector(cameraButtonPressed), for: .primaryActionTriggered)
+    cameraItem.setSize(CGSize(width: 60, height: 30), animated: false)
+    messageInputBar.leftStackView.alignment = .center
+    messageInputBar.setLeftStackViewWidthConstant(to: 50, animated: false)
+    
+    messageInputBar.setStackViewItems([cameraItem], forStack: .left, animated: false)
   }
 }
 
