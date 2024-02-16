@@ -39,6 +39,8 @@ import FirebaseFirestore
 final class ChatViewController: MessagesViewController {
   private let user: User
   private let channel: Channel
+  private var messages: [Message] = []
+  private var messageListener: ListenerRegistration?
 
   init(user: User, channel: Channel) {
     self.user = user
@@ -67,6 +69,30 @@ final class ChatViewController: MessagesViewController {
 
 // MARK: - MessagesDisplayDelegate
 extension ChatViewController: MessagesDisplayDelegate {}
+
+// MARK: - MessagesDataSource
+
+extension ChatViewController: MessagesDataSource {
+  func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
+    messages.count
+  }
+  
+  func currentSender() -> SenderType {
+    Sender(senderId: user.uid, displayName: AppSettings.displayName)
+  }
+  
+  func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
+    messages[indexPath.section]
+  }
+  
+  func messageTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
+    let name = message.sender.displayName
+    return NSAttributedString(string: name, attributes: [
+      .font: UIFont.preferredFont(forTextStyle: .caption1),
+      .foregroundColor: UIColor(white: 0.3, alpha: 1)
+    ])
+  }
+}
 
 // MARK: - InputBarAccessoryViewDelegate
 extension ChatViewController: InputBarAccessoryViewDelegate {}
