@@ -56,6 +56,10 @@ final class ChatViewController: MessagesViewController {
     fatalError("init(coder:) has not been implemented")
   }
   
+  deinit {
+    messageListener?.remove()
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     navigationItem.largeTitleDisplayMode = .never
@@ -71,6 +75,19 @@ final class ChatViewController: MessagesViewController {
     }
     
     reference = database.collection("channels/\(id)/thread")
+    messageListener = reference?.addSnapshotListener({ [weak self] querySnapshot, error in
+      guard let self else { return }
+      guard let snapshot = querySnapshot else {
+        print("""
+          Error listening for channel updates: \(error?.localizedDescription ?? "No error")
+          """)
+        return
+      }
+      
+      snapshot.documentChanges.forEach { change in
+        self.handleDocumentChange(change)
+      }
+    })
   }
   
   // MARK: - Helpers
@@ -101,6 +118,19 @@ final class ChatViewController: MessagesViewController {
     
     if shouldScrollToBottom {
       messagesCollectionView.scrollToLastItem(animated: true)
+    }
+  }
+  
+  private func handleDocumentChange(_ change: DocumentChange) {
+    guard let message = Message(document: change.document) else {
+      return
+    }
+    
+    switch change.type {
+    case .added:
+      insertNewMessage(message)
+    default:
+      break
     }
   }
   
