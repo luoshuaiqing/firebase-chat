@@ -11,6 +11,7 @@
 		185CB1FC23C78CE6009F7571 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185CB1FB23C78CE6009F7571 /* AppDelegate.swift */; };
 		185CB1FE23C78CE6009F7571 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185CB1FD23C78CE6009F7571 /* SceneDelegate.swift */; };
 		185CB20523C78CE8009F7571 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 185CB20423C78CE8009F7571 /* Assets.xcassets */; };
+		583BBE0F2B7F36D2007140FE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 583BBE0E2B7F36D2007140FE /* GoogleService-Info.plist */; };
 		B04F413326285C3C00321FB2 /* ImageMediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04F413226285C3C00321FB2 /* ImageMediaItem.swift */; };
 		B04F413626285D7A00321FB2 /* Sender.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04F413526285D7A00321FB2 /* Sender.swift */; };
 		B0C4A06C262835E100824D61 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = B0C4A06B262835E100824D61 /* MessageKit */; };
@@ -40,6 +41,7 @@
 		185CB1FD23C78CE6009F7571 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		185CB20423C78CE8009F7571 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		185CB20923C78CE8009F7571 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		583BBE0E2B7F36D2007140FE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B04F413226285C3C00321FB2 /* ImageMediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMediaItem.swift; sourceTree = "<group>"; };
 		B04F413526285D7A00321FB2 /* Sender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sender.swift; sourceTree = "<group>"; };
 		B0C4A07D262839AD00824D61 /* LoginViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoginViewController.xib; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 		B0C4A0782628394900824D61 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				583BBE0E2B7F36D2007140FE /* GoogleService-Info.plist */,
 				180DC61423C78D9800486B1A /* LaunchScreen.storyboard */,
 				185CB20423C78CE8009F7571 /* Assets.xcassets */,
 				185CB20923C78CE8009F7571 /* Info.plist */,
@@ -229,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B0C4A07E262839AD00824D61 /* LoginViewController.xib in Resources */,
+				583BBE0F2B7F36D2007140FE /* GoogleService-Info.plist in Resources */,
 				180DC61523C78D9800486B1A /* LaunchScreen.storyboard in Resources */,
 				185CB20523C78CE8009F7571 /* Assets.xcassets in Resources */,
 			);
@@ -406,7 +410,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7655W2DD35;
 				INFOPLIST_FILE = "$(SRCROOT)/RWRC/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -424,7 +428,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7655W2DD35;
 				INFOPLIST_FILE = "$(SRCROOT)/RWRC/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
