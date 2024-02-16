@@ -41,37 +41,80 @@ final class ChatViewController: MessagesViewController {
   private let channel: Channel
   private var messages: [Message] = []
   private var messageListener: ListenerRegistration?
-
+  
   init(user: User, channel: Channel) {
     self.user = user
     self.channel = channel
     super.init(nibName: nil, bundle: nil)
-
+    
     title = channel.name
   }
-
+  
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     navigationItem.largeTitleDisplayMode = .never
     setUpMessageView()
+    removeMessageAvatarsAndAdjustMessageLabelAlignment()
   }
-
+  
   private func setUpMessageView() {
     maintainPositionOnKeyboardFrameChanged = true
     messageInputBar.inputTextView.tintColor = .primary
     messageInputBar.sendButton.setTitleColor(.primary, for: .normal)
   }
+  
+  private func removeMessageAvatarsAndAdjustMessageLabelAlignment() {
+    guard let layout = messagesCollectionView.collectionViewLayout as? MessagesCollectionViewFlowLayout else {
+      return
+    }
+    
+    layout.textMessageSizeCalculator.outgoingAvatarSize = .zero
+    layout.textMessageSizeCalculator.incomingMessageLabelInsets = .zero
+    layout.setMessageIncomingAvatarSize(.zero)
+    layout.setMessageOutgoingAvatarSize(.zero)
+    let incomingLabelAlignment = LabelAlignment(
+      textAlignment: .left,
+      textInsets: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 0))
+    layout.setMessageIncomingMessageTopLabelAlignment(incomingLabelAlignment)
+    let outgoingLabelAlignment = LabelAlignment(
+      textAlignment: .right,
+      textInsets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 15))
+    layout.setMessageOutgoingMessageTopLabelAlignment(outgoingLabelAlignment)
+  }
 }
 
 // MARK: - MessagesDisplayDelegate
-extension ChatViewController: MessagesDisplayDelegate {}
+extension ChatViewController: MessagesDisplayDelegate {
+  func backgroundColor(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor {
+    isFromCurrentSender(message: message) ? .primary : .incomingMessage
+  }
+  
+  func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
+    avatarView.isHidden = true
+  }
+  
+  func messageStyle(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageStyle {
+    let corner: MessageStyle.TailCorner = isFromCurrentSender(message: message) ? .bottomRight : .bottomLeft
+    return .bubbleTail(corner, .curved)
+  }
+}
+
+// MARK: - MessagesLayoutDelegate
+extension ChatViewController: MessagesLayoutDelegate {
+  func footerViewSize(for section: Int, in messagesCollectionView: MessagesCollectionView) -> CGSize {
+    CGSize(width: 0, height: 8)
+  }
+  
+  func messageTopLabelHeight(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGFloat {
+    20
+  }
+}
 
 // MARK: - MessagesDataSource
-
 extension ChatViewController: MessagesDataSource {
   func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
     messages.count
