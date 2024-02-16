@@ -147,13 +147,21 @@ final class ChatViewController: MessagesViewController {
   }
   
   private func handleDocumentChange(_ change: DocumentChange) {
-    guard let message = Message(document: change.document) else {
+    guard var message = Message(document: change.document) else {
       return
     }
     
     switch change.type {
     case .added:
-      insertNewMessage(message)
+      if let url = message.downloadURL {
+        downloadImage(at: url) { [weak self] image in
+          guard let self, let image else { return }
+          message.image = image
+          self.insertNewMessage(message)
+        }
+      } else {
+        insertNewMessage(message)
+      }
     default:
       break
     }
@@ -236,6 +244,15 @@ final class ChatViewController: MessagesViewController {
     }
   }
   
+  private func downloadImage(at url: URL, completion: @escaping(UIImage?) -> Void) {
+    let ref = Storage.storage().reference(forURL: url.absoluteString)
+    let megaByte = Int64(1 * 1024 * 1024)
+    
+    ref.getData(maxSize: megaByte) { imageData, _ in
+      guard let imageData else { return completion(nil) }
+      completion(UIImage(data: imageData))
+    }
+  }
 }
 
 // MARK: - MessagesDisplayDelegate
