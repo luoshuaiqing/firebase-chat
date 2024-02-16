@@ -41,6 +41,8 @@ final class ChatViewController: MessagesViewController {
   private let channel: Channel
   private var messages: [Message] = []
   private var messageListener: ListenerRegistration?
+  private let database = Firestore.firestore()
+  private var reference: CollectionReference?
   
   init(user: User, channel: Channel) {
     self.user = user
@@ -59,9 +61,30 @@ final class ChatViewController: MessagesViewController {
     navigationItem.largeTitleDisplayMode = .never
     setUpMessageView()
     removeMessageAvatarsAndAdjustMessageLabelAlignment()
+    listenToMessages()
+  }
+  
+  private func listenToMessages() {
+    guard let id = channel.id else {
+      navigationController?.popViewController(animated: true)
+      return
+    }
+    
+    reference = database.collection("channels/\(id)/thread")
   }
   
   // MARK: - Helpers
+  private func save(_ message: Message) {
+    reference?.addDocument(data: message.representation) { [weak self] error in
+      guard let self else { return }
+      if let error {
+        print("Error sending message: \(error.localizedDescription)")
+        return
+      }
+      self.messagesCollectionView.scrollToLastItem()
+    }
+  }
+  
   private func insertNewMessage(_ message: Message) {
     if messages.contains(message) {
       assertionFailure("Theo: This should not happen..")
@@ -163,7 +186,13 @@ extension ChatViewController: MessagesDataSource {
 }
 
 // MARK: - InputBarAccessoryViewDelegate
-extension ChatViewController: InputBarAccessoryViewDelegate {}
+extension ChatViewController: InputBarAccessoryViewDelegate {
+  func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
+    let message = Message(user: user, content: text)
+    save(message)
+    inputBar.inputTextView.text = ""
+  }
+}
 
 // MARK: - UIImagePickerControllerDelegate
 extension ChatViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {}
