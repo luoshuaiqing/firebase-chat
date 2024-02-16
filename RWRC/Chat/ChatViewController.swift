@@ -61,6 +61,26 @@ final class ChatViewController: MessagesViewController {
     removeMessageAvatarsAndAdjustMessageLabelAlignment()
   }
   
+  // MARK: - Helpers
+  private func insertNewMessage(_ message: Message) {
+    if messages.contains(message) {
+      assertionFailure("Theo: This should not happen..")
+      return
+    }
+    
+    messages.append(message)
+    messages.sort()
+    
+    let isLatestMessage = messages.firstIndex(of: message) == messages.count - 1
+    let shouldScrollToBottom = messagesCollectionView.isAtBottom && isLatestMessage
+    
+    messagesCollectionView.reloadData()
+    
+    if shouldScrollToBottom {
+      messagesCollectionView.scrollToLastItem(animated: true)
+    }
+  }
+  
   private func setUpMessageView() {
     maintainPositionOnKeyboardFrameChanged = true
     messageInputBar.inputTextView.tintColor = .primary
