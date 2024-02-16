@@ -298,4 +298,23 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
 }
 
 // MARK: - UIImagePickerControllerDelegate
-extension ChatViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {}
+extension ChatViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+  func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    picker.dismiss(animated: true)
+    
+    if let asset = info[.phAsset] as? PHAsset {
+      let size = CGSize(width: 500, height: 500)
+      PHImageManager.default().requestImage(for: asset, targetSize: size, contentMode: .aspectFit, options: nil) { image, _ in
+        guard let image else { return }
+        self.sendPhoto(image)
+      }
+    } else if let image = info[.originalImage] as? UIImage {
+      sendPhoto(image)
+    }
+  }
+  
+  func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+    picker.dismiss(animated: true)
+  }
+  
+}
