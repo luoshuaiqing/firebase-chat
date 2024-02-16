@@ -36,6 +36,7 @@ import MessageKit
 import InputBarAccessoryView
 import FirebaseFirestore
 import Photos
+import FirebaseStorage
 
 final class ChatViewController: MessagesViewController {
   private let user: User
@@ -44,6 +45,17 @@ final class ChatViewController: MessagesViewController {
   private var messageListener: ListenerRegistration?
   private let database = Firestore.firestore()
   private var reference: CollectionReference?
+  private var isSendingPhoto = false {
+    didSet {
+      messageInputBar.leftStackViewItems.forEach { item in
+        guard let item = item as? InputBarButtonItem else {
+          return
+        }
+        item.isEnabled = !self.isSendingPhoto
+      }
+    }
+  }
+  private let storage = Storage.storage().reference()
   
   init(user: User, channel: Channel) {
     self.user = user
