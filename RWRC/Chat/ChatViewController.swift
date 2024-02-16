@@ -201,6 +201,41 @@ final class ChatViewController: MessagesViewController {
     
     messageInputBar.setStackViewItems([cameraItem], forStack: .left, animated: false)
   }
+  
+  private func uploadImage(_ image: UIImage, to channel: Channel, completion: @escaping (URL?) -> Void) {
+    guard let channelId = channel.id, let scaledImage = image.scaledToSafeUploadSize, let data = scaledImage.jpegData(compressionQuality: 0.4)
+    else {
+      return completion(nil)
+    }
+    
+    let metadata = StorageMetadata()
+    metadata.contentType = "image/jpeg"
+    
+    let imageName = [UUID().uuidString, String(Date().timeIntervalSince1970)].joined()
+    let imageReference = storage.child("\(channelId)/\(imageName)")
+    imageReference.putData(data, metadata: metadata) { _, error in
+      imageReference.downloadURL { url, _ in
+        completion(url)
+      }
+    }
+  }
+  
+  private func sendPhoto(_ image: UIImage) {
+    isSendingPhoto = true
+    
+    uploadImage(image, to: channel) { [weak self] url in
+      guard let self else { return }
+      defer {
+        self.isSendingPhoto = false
+      }
+      guard let url else { return }
+      var message = Message(user: self.user, image: image)
+      message.downloadURL = url
+      self.save(message)
+      self.messagesCollectionView.scrollToLastItem()
+    }
+  }
+  
 }
 
 // MARK: - MessagesDisplayDelegate
