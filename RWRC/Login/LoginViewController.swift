@@ -1,15 +1,15 @@
 /// Copyright (c) 2021 Razeware LLC
-/// 
+///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
 /// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 /// copies of the Software, and to permit persons to whom the Software is
 /// furnished to do so, subject to the following conditions:
-/// 
+///
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
-/// 
+///
 /// Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
 /// distribute, sublicense, create a derivative work, and/or sell copies of the
 /// Software in any work that is designed, intended, or marketed for pedagogical or
@@ -17,7 +17,7 @@
 /// or information technology.  Permission for such use, copying, modification,
 /// merger, publication, distribution, sublicensing, creation of derivative works,
 /// or sale is expressly withheld.
-/// 
+///
 /// This project and source code may use libraries or frameworks that are
 /// released under various Open-Source licenses. Use of those libraries and
 /// frameworks are governed by their own individual licenses.
@@ -31,6 +31,7 @@
 /// THE SOFTWARE.
 
 import UIKit
+import FirebaseAuth
 
 final class LoginViewController: UIViewController {
   @IBOutlet private var actionButton: UIButton!
@@ -38,41 +39,41 @@ final class LoginViewController: UIViewController {
   @IBOutlet private var displayNameField: UITextField!
   @IBOutlet private var actionButtonBackingView: UIView!
   @IBOutlet private var bottomConstraint: NSLayoutConstraint!
-
+  
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
   }
-
+  
   override func viewDidLoad() {
     super.viewDidLoad()
-
+    
     fieldBackingView.smoothRoundCorners(to: 8)
     actionButtonBackingView.smoothRoundCorners(to: actionButtonBackingView.bounds.height / 2)
-
+    
     displayNameField.tintColor = .primary
     displayNameField.addTarget(
       self,
       action: #selector(textFieldDidReturn),
       for: .primaryActionTriggered)
-
+    
     registerForKeyboardNotifications()
   }
-
+  
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-
+    
     displayNameField.becomeFirstResponder()
   }
-
+  
   // MARK: - Actions
   @IBAction private func actionButtonPressed() {
     signIn()
   }
-
+  
   @objc private func textFieldDidReturn() {
     signIn()
   }
-
+  
   // MARK: - Helpers
   private func registerForKeyboardNotifications() {
     NotificationCenter.default.addObserver(
@@ -86,7 +87,7 @@ final class LoginViewController: UIViewController {
       name: UIResponder.keyboardWillHideNotification,
       object: nil)
   }
-
+  
   private func signIn() {
     guard
       let name = displayNameField.text,
@@ -95,27 +96,29 @@ final class LoginViewController: UIViewController {
       showMissingNameAlert()
       return
     }
-
+    
     displayNameField.resignFirstResponder()
-
+    
     AppSettings.displayName = name
+    
+    Auth.auth().signInAnonymously()
   }
-
+  
   private func showMissingNameAlert() {
     let alertController = UIAlertController(
       title: "Display Name Required",
       message: "Please enter a display name.",
       preferredStyle: .alert)
-
+    
     let action = UIAlertAction(
       title: "Okay",
       style: .default) { _ in
-      self.displayNameField.becomeFirstResponder()
-    }
+        self.displayNameField.becomeFirstResponder()
+      }
     alertController.addAction(action)
     present(alertController, animated: true)
   }
-
+  
   // MARK: - Notifications
   @objc private func keyboardWillShow(_ notification: Notification) {
     guard
@@ -126,18 +129,18 @@ final class LoginViewController: UIViewController {
     else {
       return
     }
-
+    
     let options = UIView.AnimationOptions(rawValue: keyboardAnimationCurve.uintValue << 16)
     bottomConstraint.constant = keyboardHeight + 20
-
+    
     UIView.animate(
       withDuration: keyboardAnimationDuration.doubleValue,
       delay: 0,
       options: options) {
-      self.view.layoutIfNeeded()
-    }
+        self.view.layoutIfNeeded()
+      }
   }
-
+  
   @objc private func keyboardWillHide(_ notification: Notification) {
     guard
       let userInfo = notification.userInfo,
@@ -146,15 +149,15 @@ final class LoginViewController: UIViewController {
     else {
       return
     }
-
+    
     let options = UIView.AnimationOptions(rawValue: keyboardAnimationCurve.uintValue << 16)
     bottomConstraint.constant = 20
-
+    
     UIView.animate(
       withDuration: keyboardAnimationDuration.doubleValue,
       delay: 0,
       options: options) {
-      self.view.layoutIfNeeded()
-    }
+        self.view.layoutIfNeeded()
+      }
   }
 }
