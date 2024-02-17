@@ -78,6 +78,7 @@ final class ChatViewController: MessagesViewController {
     navigationItem.largeTitleDisplayMode = .never
     setUpMessageView()
     removeMessageAvatarsAndAdjustMessageLabelAlignment()
+    addCameraBarButton()
     listenToMessages()
   }
   
@@ -222,6 +223,9 @@ final class ChatViewController: MessagesViewController {
     let imageName = [UUID().uuidString, String(Date().timeIntervalSince1970)].joined()
     let imageReference = storage.child("\(channelId)/\(imageName)")
     imageReference.putData(data, metadata: metadata) { _, error in
+      guard error == nil else {
+        return completion(nil)
+      }
       imageReference.downloadURL { url, _ in
         completion(url)
       }
